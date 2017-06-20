@@ -7,7 +7,8 @@ tags: [FR]
 categories: Containers
 ---
 
-Ce lab montre des exemples d'utilisation de la commande `unshare` pour exécuter des processus dans des nouveaux namespaces. L'utilisation des namespaces permet de limiter la vision du système qu'à un processus
+L'utilisation des namespaces permet de limiter la vision du système qu'à un processus
+Ce lab montre des exemples d'utilisation de la commande `unshare` pour exécuter des processus dans des nouveaux namespaces.
 
 ## Illustration du namespace Network
 
@@ -130,19 +131,3 @@ La commande suivante permet de sortir du namespace.
 ```.term1
 exit
 ```
-
-## Illustration du User namespace
-
-Listez les fichiers du répertoire local et vérifier le user auquel ils appartiennent
-$ ls -al
-Utilisez unshare pour lancer un process dans un nouveau namespace user et vérifier les même fichiers
-$ sudo unshare --user ls -al
-
-## Illustration namespace UTS
-
-Nous Utilisxxez unshare pour lancer un process dans un nouveau namespace UTS et changer le hostname
-$ sudo unshare --uts
-# hostname container
-Lorsque vous quittez le process, le hostname du hôte n’a pas été modifié
-
-
