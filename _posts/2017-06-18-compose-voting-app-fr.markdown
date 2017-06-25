@@ -133,6 +133,24 @@ Les étapes réalisées lors du lancement de l'application sont les suivantes:
 - contruction des images pour les services custom (`vote`, `worker`, `result`) et récupération des images `redis` et `postgres`
 - lancement de containers pour chaque service
 
+## Les containers
+
+La commande suivante liste les containers qui ont été lancés.
+
+```.term1
+docker-compose ps
+```
+
+```
+          Name                         Command               State                      Ports
+-----------------------------------------------------------------------------------------------------------------
+db                          docker-entrypoint.sh postgres    Up      5432/tcp
+examplevotingapp_result_1   nodemon --debug server.js        Up      0.0.0.0:5858->5858/tcp, 0.0.0.0:5001->80/tcp
+examplevotingapp_vote_1     python app.py                    Up      0.0.0.0:5000->80/tcp
+examplevotingapp_worker_1   /bin/sh -c dotnet src/Work ...   Up
+redis                       docker-entrypoint.sh redis ...   Up      0.0.0.0:32768->6379/tcp
+```
+
 ## Les volumes
 
 Si nous listons les volumes avec la CLI, nous pouvons voir que le volume défini dans le fichier `docker-compose.yml` est présent.
@@ -174,7 +192,69 @@ Note: comme nous sommes dans le contexte d'un hôte unique (et non dans le conte
 Nous pouvons maintenant accéder à l'application:
 
 - nous effectuons un choix entre les 2 options depuis [l'interface de vote](/){:data-term=".term1"}{:data-port="5000"}
+
+![Vote]({{ site.baseurl }}/images/voting-vote.png)
+
 - nous visualisons le résultat depuis [l'interface de résultat](/){:data-term=".term1"}{:data-port="5001"}
+
+![Result]({{ site.baseurl }}/images/voting-result.png)
+
+## Scaling du service worker
+
+Par défaut, un container est instantié pour chaque service. Il est possible, avec la commande `scale` de changer ce comportement et de scaler un service une fois qu'il est lancé.
+
+La commande suivante spécifie 2 instances du service worker.
+
+```.term1
+docker-compose scale worker=2
+```
+
+```
+Starting examplevotingapp_worker_1 ... done
+Creating examplevotingapp_worker_2 ...
+Creating examplevotingapp_worker_2 ... done
+```
+
+Si nous listons les containers présent, nous pouvons voir les 2 containers du service `worker`.
+
+```.term1
+docker-compose ps
+```
+
+```
+          Name                         Command                State                        Ports
+--------------------------------------------------------------------------------------------------------------------
+db                          docker-entrypoint.sh postgres    Up         5432/tcp
+examplevotingapp_result_1   nodemon --debug server.js        Up         0.0.0.0:5858->5858/tcp, 0.0.0.0:5001->80/tcp
+examplevotingapp_vote_1     python app.py                    Up         0.0.0.0:5000->80/tcp
+examplevotingapp_worker_1   /bin/sh -c dotnet src/Work ...   Up
+examplevotingapp_worker_2   /bin/sh -c dotnet src/Work ...   Up
+redis                       docker-entrypoint.sh redis ...   Up         0.0.0.0:32768->6379/tcp
+```
+
+Notes:
+- il n'est pas possible de scaler les services `vote` et `result` car ils spécifient tous les 2 un port, plusieurs containers ne peuvent pas utiliser le même port de la machine hôte
+- il n'est pas non plus possible de scaler les services db et redis car ils spécifient tous les 2 l'option `container_name`, plusieurs containers ne peuvent pas avoir le même nom.
+
+```.term1
+docker-compose scale redis=2
+```
+```
+...
+ERROR: for redis  Cannot create container for service redis: Conflict. The container name "/redis" is al
+ready in use by container "ff7ffbbebc3f4441a6b93c9a06389367b552b010bd62377931372ec2da0d4d59". You have t
+o remove (or rename) that container to be able to reuse that name.
+```
+
+```.term1
+docker-compose scale vote=3
+```
+```
+...
+ERROR: for examplevotingapp_vote_3  Cannot start service vote: driver failed programming external connec
+tivity on endpoint examplevotingapp_vote_3 (b520da97c5736c46bfb2c80947fd2643387df0e0f67bbe18c226bad006dc
+940e): Bind for 0.0.0.0:5000 failed: port is already allocated
+```
 
 ## Suppression de l'application
 
