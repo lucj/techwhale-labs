@@ -239,7 +239,7 @@ round-trip min/avg/max = 0.048/0.070/0.102 ms
 Nous pouvons écraser la commande par défaut et spécifier une autre adresse IP
 
 ```.term1
-docker container run ping:1.0 8.8.8.8
+docker container run ping:3.0 8.8.8.8
 ```
 
 Nous obtenons alors le résultat suivant:
