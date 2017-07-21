@@ -214,7 +214,7 @@ Chain POSTROUTING (policy ACCEPT 0 packets, 0 bytes)
 Les packets arrivant sur le port `8080` sont estampilés avec la valeur `0x100` (256 en décimal) dans la chaine PREROUTING et sont envoyés sur l'IP `10.255.0.4` dans le chaine OUTPUT. Cette adresse IP correspond à l'adresse IP virtuelle (VIP) du service `vote` comme le montre la commande d'inspection suivante:
 
 ```.term1
-docker service inspect -f '{{ .Endpoint.VirtualIPs }}' vote
+docker service inspect -f "{{ "{{ .Endpoint.VirtualIPs " }}}}" vote
 ```
 
 ```
