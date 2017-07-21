@@ -272,7 +272,7 @@ kill 7
 Redémarrez ensuite le daemon avec la commande suivante.
 
 ```
-nohup docker &
+nohup dockerd &
 ```
 
 Il n'est alors pas possible de lancer de commande sur le swarm tant que le manager n'a pas été unlocké.
